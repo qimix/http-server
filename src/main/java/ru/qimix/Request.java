@@ -17,7 +17,7 @@ public class Request {
                    String protocol,
                    ServerSocket socket,
                    BufferedReader bufferedReader,
-                   BufferedOutputStream bufferedOutputStream){
+                   BufferedOutputStream bufferedOutputStream) {
         this.method = method;
         this.path = path;
         this.protocol = protocol;

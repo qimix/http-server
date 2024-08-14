@@ -40,7 +40,7 @@ public class Server {
                         continue;
                     } else {
                         Request request = new Request(parts[0], parts[1], parts[2], serverSocket, in, out);
-                        handlers(request);
+                        connectionProcess(request);
                     }
                 }
             }
@@ -49,7 +49,7 @@ public class Server {
         }
     }
 
-    public void handlers(Request request) throws IOException {
+    public void connectionProcess(Request request) throws IOException {
         final var filePath = Path.of(".", "public", request.path);
         final var mimeType = Files.probeContentType(filePath);
 
