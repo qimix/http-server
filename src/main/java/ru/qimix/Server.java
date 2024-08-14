@@ -14,8 +14,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server {
-    final List<String> validPaths = List.of("/index.html", "/spring.svg", "/spring.png", "/resources.html", "/styles.css", "/app.js", "/links.html", "/forms.html", "/classic.html", "/events.html", "/events.js");
-    ExecutorService threadPool = Executors.newFixedThreadPool(64);
+    protected final List<String> validPaths = List.of("/index.html", "/spring.svg", "/spring.png", "/resources.html", "/styles.css", "/app.js", "/links.html", "/forms.html", "/classic.html", "/events.html", "/events.js");
+    protected final ExecutorService threadPool = Executors.newFixedThreadPool(64);
 
     public void startServer() {
         try (final var serverSocket = new ServerSocket(9999)) {
@@ -41,7 +41,6 @@ public class Server {
         }
     }
 
-
     public void connectionProcess(Socket socket) throws IOException {
         final var in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         final var out = new BufferedOutputStream(socket.getOutputStream());
@@ -63,7 +62,6 @@ public class Server {
             out.flush();
             return;
         }
-
 
         final var filePath = Path.of(".", "public", path);
         final var mimeType = Files.probeContentType(filePath);
