@@ -22,8 +22,21 @@ public class Server {
 
     public void fillHandlerMap(){
         handlerMap.put((Map<String, String>) new HashMap<>().put("GET","/classic.html"), new Handler() {
-            public void handle(Request request, BufferedOutputStream responseStream) {
-                System.out.println("Hello world!");
+            public void handle(Request request, BufferedOutputStream responseStream) throws IOException {
+                    final var template = Files.readString(request.filePath);
+                    final var content = template.replace(
+                            "{time}",
+                            LocalDateTime.now().toString()
+                    ).getBytes();
+                    responseStream.write((
+                            "HTTP/1.1 200 OK\r\n" +
+                                    "Content-Type: " + request.mimeType + "\r\n" +
+                                    "Content-Length: " + content.length + "\r\n" +
+                                    "Connection: close\r\n" +
+                                    "\r\n"
+                    ).getBytes());
+                    responseStream.write(content);
+                    responseStream.flush();
             }
         });
     }
@@ -80,7 +93,7 @@ public class Server {
         final var mimeType = Files.probeContentType(filePath);
 
         // special case for classic
-        Request request = new Request(parts[0], parts[1], filePath, mimeType, socket);
+        Request request = new Request(parts[0], parts[1], filePath, mimeType);
         Handler handler = handlerMap.get((Map<String, String>) new HashMap<>().put("GET","/classic.html"));
         handler.handle(request,new BufferedOutputStream(socket.getOutputStream()));
 
