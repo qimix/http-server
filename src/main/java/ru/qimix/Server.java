@@ -63,7 +63,9 @@ public class Server {
 
     public void addHandler(String requestMethod, String requestPath, Handler handler) {
         System.out.println("Добавлен хендлер: " + requestMethod + " - " + requestPath);
-        handlerMap.put((Map<String, String>) new HashMap<>().put(requestMethod, requestPath), handler);
+        synchronized (handlerMap) {
+            handlerMap.put((Map<String, String>) new HashMap<>().put(requestMethod, requestPath), handler);
+        }
     }
 
     public void startServer() {
