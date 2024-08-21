@@ -24,7 +24,6 @@ public class Server {
     Handler handler = new Handler() {
         @Override
         public void handle(Request request, BufferedOutputStream responseStream) throws IOException {
-            System.out.println("Hello");
             final var filePath = Path.of(".", "public", request.requestPath);
             final var mimeType = Files.probeContentType(filePath);
             final var template = Files.readString(filePath);
@@ -41,6 +40,7 @@ public class Server {
             ).getBytes());
             responseStream.write(content);
             responseStream.flush();
+            responseStream.close();
         }
     };
 
@@ -61,7 +61,6 @@ public class Server {
 
     public void addHandler(String requestMethod, String requestPath, Handler handler) {
 
-
     }
 
     public void startServer() {
@@ -79,7 +78,7 @@ public class Server {
                                 var in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                                 var out = new BufferedOutputStream(socket.getOutputStream());
                                 final var requestLine = in.readLine();
-                                final var parts = requestLine.split(" ");
+                                final String[] parts = requestLine.split(" ");
 
                                 if (parts.length != 3) {
                                     return;
