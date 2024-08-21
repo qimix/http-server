@@ -17,6 +17,11 @@ import java.util.concurrent.Executors;
 public class Server {
     protected final ExecutorService threadPool = Executors.newFixedThreadPool(64);
     protected Map<Map<String, String>, Handler> handlerMap = Collections.synchronizedMap(new HashMap<Map<String, String>, Handler>());
+    protected int serverPort = 9999;
+
+    public void listen(int serverPort) {
+        this.serverPort = serverPort;
+    }
 
     Handler handler = new Handler() {
         @Override
@@ -56,17 +61,15 @@ public class Server {
         handlerMap.put((Map<String, String>) new HashMap<>().put("GET", "/events.js"), handler);
     }
 
-
     public void addHandler(String requestMethod, String requestPath, Handler handler) {
         System.out.println("Добавлен хендлер: " + requestMethod + " - " + requestPath);
         handlerMap.put((Map<String, String>) new HashMap<>().put(requestMethod, requestPath), handler);
     }
 
     public void startServer() {
-        System.out.println("Server started on port: 9999");
+        System.out.println("Server started on port: " + serverPort);
         fillHandlerMap();
-
-        try (var serverSocket = new ServerSocket(9999)) {
+        try (var serverSocket = new ServerSocket(serverPort)) {
             while (true) {
                 try {
                     var socket = serverSocket.accept();
