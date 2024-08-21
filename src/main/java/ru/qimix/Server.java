@@ -23,7 +23,7 @@ public class Server {
         this.serverPort = serverPort;
     }
 
-    Handler handler = new Handler() {
+    protected Handler handler = new Handler() {
         @Override
         public void handle(Request request, BufferedOutputStream responseStream) throws IOException {
             System.out.println("Запрос обработан: " + request.requestMethod + " - " + request.requestPath);
@@ -47,7 +47,7 @@ public class Server {
         }
     };
 
-    public void fillHandlerMap() {
+    protected void fillHandlerMap() {
         handlerMap.put((Map<String, String>) new HashMap<>().put("GET", "/index.html"), handler);
         handlerMap.put((Map<String, String>) new HashMap<>().put("GET", "/classic.html"), handler);
         handlerMap.put((Map<String, String>) new HashMap<>().put("GET", "/spring.svg"), handler);
