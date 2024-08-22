@@ -47,6 +47,8 @@ public class Server {
         }
     };
 
+
+
     protected void fillHandlerMap() {
         handlerMap.put((Map<String, String>) new HashMap<>().put("GET", "/index.html"), handler);
         handlerMap.put((Map<String, String>) new HashMap<>().put("GET", "/classic.html"), handler);
