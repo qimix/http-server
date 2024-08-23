@@ -1,5 +1,6 @@
 package ru.qimix;
 
+import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 
 import java.io.BufferedOutputStream;
@@ -72,6 +73,11 @@ public class Server {
         }
     }
 
+    protected String getQueryParam(String site){
+        NameValuePair value = URLEncodedUtils.parse(URI.create(site), "UTF-8").get(0);
+        return value.getValue();
+    }
+
     public void startServer() {
         System.out.println("Server started on port: " + serverPort);
         fillHandlerMap();
@@ -87,20 +93,18 @@ public class Server {
                                 var out = new BufferedOutputStream(socket.getOutputStream());
                                 final var requestLine = in.readLine();
                                 final String[] parts = requestLine.split(" ");
-                                String site = "http://localhost:";
+                                String site = "http://localhost:" + serverPort + parts[1];
 
                                 if (parts.length != 3) {
                                     return;
                                 }
 
                                 if (parts[1].contains("?")) {
-                                    String params = URLEncodedUtils.parse(URI.create(site + serverPort + parts[1]), "UTF-8").get(0).toString();
+                                    String params = URLEncodedUtils.parse(URI.create(site), "UTF-8").get(0).toString();
                                     StringBuilder stringBuilder = new StringBuilder(parts[1]);
                                     String reqPath = stringBuilder.delete(parts[1].length() - params.length() - 1, parts[1].length()).toString();
                                     parts[1] = reqPath;
                                 }
-
-
 
                                 final var path = parts[1];
                                 if (!handlerMap.containsKey((Map<String, String>) new HashMap<>().put(parts[0], parts[1]))) {
