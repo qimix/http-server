@@ -73,7 +73,7 @@ public class Server {
         }
     }
 
-    protected String getQueryParam(String site){
+    protected String getQueryParam(String site) {
         NameValuePair value = URLEncodedUtils.parse(URI.create(site), "UTF-8").get(0);
         return value.getValue();
     }
