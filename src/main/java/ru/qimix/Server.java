@@ -1,19 +1,18 @@
 package ru.qimix;
 
-import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.*;
+import java.net.ServerSocket;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -50,7 +49,6 @@ public class Server {
             responseStream.close();
         }
     };
-
 
 
     protected void fillHandlerMap() {
@@ -91,10 +89,10 @@ public class Server {
                                 final String[] parts = requestLine.split(" ");
                                 String site = "http://localhost:";
 
-                                String params =  URLEncodedUtils.parse(URI.create(site + serverPort + parts[1]), "UTF-8").get(0).toString();
-                                if(params.length() != 0) {
+                                if (parts[1].contains("?")) {
+                                    String params = URLEncodedUtils.parse(URI.create(site + serverPort + parts[1]), "UTF-8").get(0).toString();
                                     StringBuilder stringBuilder = new StringBuilder(parts[1]);
-                                    String reqPath = stringBuilder.delete(parts[1].length() - params.length() - 1,parts[1].length()).toString();
+                                    String reqPath = stringBuilder.delete(parts[1].length() - params.length() - 1, parts[1].length()).toString();
                                     parts[1] = reqPath;
                                 }
 
