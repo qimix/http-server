@@ -89,6 +89,10 @@ public class Server {
                                 final String[] parts = requestLine.split(" ");
                                 String site = "http://localhost:";
 
+                                if (parts.length != 3) {
+                                    return;
+                                }
+
                                 if (parts[1].contains("?")) {
                                     String params = URLEncodedUtils.parse(URI.create(site + serverPort + parts[1]), "UTF-8").get(0).toString();
                                     StringBuilder stringBuilder = new StringBuilder(parts[1]);
@@ -96,9 +100,7 @@ public class Server {
                                     parts[1] = reqPath;
                                 }
 
-                                if (parts.length != 3) {
-                                    return;
-                                }
+
 
                                 final var path = parts[1];
                                 if (!handlerMap.containsKey((Map<String, String>) new HashMap<>().put(parts[0], parts[1]))) {
