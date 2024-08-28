@@ -12,16 +12,24 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server {
     protected final ExecutorService threadPool = Executors.newFixedThreadPool(64);
     protected Map<Map<String, String>, Handler> handlerMap = Collections.synchronizedMap(new HashMap<Map<String, String>, Handler>());
+    protected List<String> messages = Collections.synchronizedList(new ArrayList<>());
     protected int serverPort = 9999;
+    protected int counter = 0;
+
+    public synchronized int getCounter() {
+        return counter;
+    }
+
+    public synchronized void setCounter() {
+        this.counter = counter++;
+    }
 
     public void listen(int serverPort) {
         this.serverPort = serverPort;
@@ -66,16 +74,22 @@ public class Server {
         handlerMap.put((Map<String, String>) new HashMap<>().put("GET", "/events.js"), handler);
     }
 
-    public void addHandler(String requestMethod, String requestPath, Handler handler) {
+    public synchronized void addHandler(String requestMethod, String requestPath, Handler handler) {
         System.out.println("Добавлен хендлер: " + requestMethod + " - " + requestPath);
         synchronized (handlerMap) {
             handlerMap.put((Map<String, String>) new HashMap<>().put(requestMethod, requestPath), handler);
         }
     }
 
-    protected String getQueryParam(String site) {
+    protected synchronized String getQueryParam(String site) {
         NameValuePair value = URLEncodedUtils.parse(URI.create(site), "UTF-8").get(0);
         return value.getValue();
+    }
+
+    protected synchronized void getContent(String[] parts, BufferedOutputStream out) throws IOException {
+        Request request = new Request(parts[0], parts[1], parts[2]);
+        Handler handler = handlerMap.get((Map<String, String>) new HashMap<>().put(parts[0], parts[1]));
+        handler.handle(request, out);
     }
 
     public void startServer() {
@@ -116,10 +130,16 @@ public class Server {
                                     ).getBytes());
                                     out.flush();
                                     return;
+                                } else if(parts[0].equals("POST")&&parts[1].equals("/messages")){
+                                    int param = Integer.parseInt(getQueryParam(site));
+                                    if(messages.contains(param)){
+                                        messages.set(param,"new message");
+                                    } else {
+                                        setCounter();
+                                        messages.add(getCounter(),"new message");
+                                    }
                                 } else {
-                                    Request request = new Request(parts[0], parts[1], parts[2]);
-                                    Handler handler = handlerMap.get((Map<String, String>) new HashMap<>().put(parts[0], parts[1]));
-                                    handler.handle(request, out);
+                                    getContent(parts, out);
                                 }
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
