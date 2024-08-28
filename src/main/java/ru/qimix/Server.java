@@ -89,8 +89,8 @@ public class Server {
                         @Override
                         public void run() {
                             try {
-                                var in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                                var out = new BufferedOutputStream(socket.getOutputStream());
+                                final var in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                                final var out = new BufferedOutputStream(socket.getOutputStream());
                                 final var requestLine = in.readLine();
                                 final String[] parts = requestLine.split(" ");
                                 String site = "http://localhost:" + serverPort + parts[1];
