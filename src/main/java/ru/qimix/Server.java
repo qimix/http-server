@@ -130,13 +130,13 @@ public class Server {
                                     ).getBytes());
                                     out.flush();
                                     return;
-                                } else if(parts[0].equals("POST")&&parts[1].equals("/messages")){
+                                } else if (parts[0].equals("POST") && parts[1].equals("/messages")) {
                                     int param = Integer.parseInt(getQueryParam(site));
-                                    if(messages.contains(param)){
-                                        messages.set(param,"new message");
+                                    if (messages.contains(param)) {
+                                        messages.set(param, "new message");
                                     } else {
                                         setCounter();
-                                        messages.add(getCounter(),"new message");
+                                        messages.add(getCounter(), "new message");
                                     }
                                 } else {
                                     getContent(parts, out);
